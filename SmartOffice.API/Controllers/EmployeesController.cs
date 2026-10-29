@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SmartOffice.Application.DTOs.Employees;
 using SmartOffice.Application.Interfaces.Employees;
+using SmartOffice.Domain.Constants;
 
 namespace SmartOffice.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -14,12 +17,14 @@ namespace SmartOffice.API.Controllers;
             _employeeService = employeeService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+    [Authorize(Policy = PermissionNames.Employees.View)]
+    public async Task<IActionResult> GetAll()
         {
             var employees = await _employeeService.GetAllAsync();
             return Ok(employees);
         }
     [HttpPost]
+    [Authorize(Policy = PermissionNames.Employees.Create)]
     public async Task<IActionResult> Create(CreateEmployeeRequest request)
     {
         var employee = await _employeeService.CreateAsync(request);
